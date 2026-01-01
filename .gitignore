@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Sanal ortam
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Veri dosyaları (opsiyonel - eğer büyükse)
+data/raw/*.json
+data/raw/*.csv
+# data/processed/ klasörünü git'te tutabilirsiniz
+
+# Görsel çıktılar
+visualizations/*.png
+visualizations/*.jpg
+visualizations/*.html
+
+# İşletim sistemi
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Log dosyaları
+*.log
+
+# Geçici dosyalar
+*.tmp
+*.temp
+.cache/
+
+# Dağıtım
+dist/
+build/
+*.egg-info/

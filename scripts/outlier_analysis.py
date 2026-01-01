@@ -153,51 +153,7 @@ def create_outlier_visualizations(df, outliers):
     fig1.write_html(output_path1)
     print(f"  ✅ {output_path1}")
     
-    # 2. Radar chart comparison - Top outliers
-    interesting_countries = [
-        'Ghana', 'Belarus', 'Tanzania', 'Japan', 'Israel', 
-        'United States', 'China', 'Finland'
-    ]
-    
-    fig2 = go.Figure()
-    
-    metrics = ['avg_interest', 'gdp_per_capita', 'internet_users_pct', 'tertiary_education']
-    metric_labels = ['AI Interest', 'GDP', 'Internet', 'Education']
-    
-    for country_name in interesting_countries:
-        country_data = df[df['country_name'] == country_name]
-        if len(country_data) > 0:
-            country = country_data.iloc[0]
-            
-            # Normalize to 0-100
-            values = []
-            for metric in metrics:
-                if metric in country and pd.notna(country[metric]):
-                    normalized = (country[metric] / df[metric].max()) * 100
-                    values.append(normalized)
-                else:
-                    values.append(0)
-            
-            fig2.add_trace(go.Scatterpolar(
-                r=values,
-                theta=metric_labels,
-                fill='toself',
-                name=country_name
-            ))
-    
-    fig2.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
-        showlegend=True,
-        title='Outlier Profiles - Multi-dimensional Comparison',
-        width=900,
-        height=700
-    )
-    
-    output_path2 = Path('visualizations/outliers_radar.html')
-    fig2.write_html(output_path2)
-    print(f"  ✅ {output_path2}")
-    
-    # 3. Bar chart - Unexpected leaders
+    # 2. Bar chart - Unexpected leaders (RADAR CHART KALDIRILDI - Karmaşık)
     top_unexpected = outliers['high_ai_low_gdp'].head(10)
     
     fig3 = go.Figure()

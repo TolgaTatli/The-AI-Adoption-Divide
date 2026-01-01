@@ -112,6 +112,55 @@ class AIAdoptionVisualizer:
         
         return fig
     
+    def create_box_plots(self):
+        """Box plot görselleştirmeleri"""
+        print("\n📦 Box plots oluşturuluyor...")
+        
+        # 1. Economic category bazında AI interest
+        fig1 = px.box(
+            self.df,
+            x='economic_category',
+            y='avg_interest',
+            color='economic_category',
+            points='all',
+            hover_data=['country_name'],
+            title='AI Interest Distribution by Economic Category',
+            labels={
+                'avg_interest': 'AI Interest (%)',
+                'economic_category': 'Economic Category'
+            },
+            color_discrete_sequence=px.colors.qualitative.Pastel
+        )
+        
+        fig1.update_layout(showlegend=False, width=900, height=600)
+        
+        output_file1 = self.output_dir / 'boxplot_economic_category.html'
+        fig1.write_html(str(output_file1))
+        print(f"✅ Box plot kaydedildi: {output_file1}")
+        
+        # 2. Region bazında AI interest
+        if 'region' in self.df.columns:
+            fig2 = px.box(
+                self.df,
+                x='region',
+                y='avg_interest',
+                color='region',
+                points='all',
+                hover_data=['country_name'],
+                title='AI Interest Distribution by Region',
+                labels={
+                    'avg_interest': 'AI Interest (%)',
+                    'region': 'Region'
+                }
+            )
+            
+            fig2.update_xaxes(tickangle=45)
+            fig2.update_layout(showlegend=False, width=1400, height=700)
+            
+            output_file2 = self.output_dir / 'boxplot_regions.html'
+            fig2.write_html(str(output_file2))
+            print(f"✅ Box plot kaydedildi: {output_file2}")
+    
     def create_all_visualizations(self):
         """Tüm görselleştirmeleri oluştur"""
         print("="*60)
@@ -121,10 +170,12 @@ class AIAdoptionVisualizer:
         self.create_world_map()
         self.create_scatter_gdp_vs_ai()
         self.create_top_countries_bar()
+        self.create_box_plots()
         
         print("\n" + "="*60)
         print("✅ TÜM GÖRSELLEŞTİRMELER TAMAMLANDI!")
         print(f"📁 Klasör: {self.output_dir}")
+        print("📊 Toplam: 5 grafik oluşturuldu")
         print("="*60)
 
 def main():

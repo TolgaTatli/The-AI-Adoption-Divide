@@ -173,21 +173,7 @@ def visualize_clusters(df_cluster):
     fig2.write_html(output_path2)
     print(f"✅ 3D cluster plot kaydedildi: {output_path2}")
     
-    # 3. Parallel coordinates
-    fig3 = px.parallel_coordinates(
-        df_cluster,
-        dimensions=['avg_interest', 'gdp_per_capita', 'internet_users_pct', 
-                   'tertiary_education'],
-        color='cluster',
-        color_continuous_scale=px.colors.sequential.Viridis,
-        title='Cluster Profiles - Parallel Coordinates'
-    )
-    
-    fig3.update_layout(width=1000, height=600)
-    
-    output_path3 = Path('visualizations/clustering_parallel.html')
-    fig3.write_html(output_path3)
-    print(f"✅ Parallel coordinates kaydedildi: {output_path3}")
+    # PARALLEL COORDINATES KALDIRILDI (Karmaşık ve anlaşılması zor)
     
     # 4. Cluster distribution by region
     if 'region' in df_cluster.columns:
@@ -250,8 +236,8 @@ def main():
     print("  - visualizations/clustering_elbow.html")
     print("  - visualizations/clustering_gdp_vs_ai.html")
     print("  - visualizations/clustering_3d.html")
-    print("  - visualizations/clustering_parallel.html")
     print("  - data/processed/ai_adoption_clustered.csv")
+    print("\n💡 Parallel coordinates grafiği kaldırıldı (çok karmaşık)")
 
 if __name__ == "__main__":
     main()

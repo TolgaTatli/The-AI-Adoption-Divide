@@ -1,9 +1,7 @@
 """
 AI Adoption Data Collection Script
-===================================
 
-Google Trends, World Bank ve GitHub API'lerinden
-yapay zeka araçlarının benimsenmesi hakkında veri toplar.
+Collects data about AI tool adoption from Google Trends and World Bank APIs.
 
 Author: SENG Data Science Team
 Date: January 2026
@@ -19,14 +17,12 @@ import json
 from datetime import datetime, timedelta
 
 class AIAdoptionCollector:
-    """AI araçlarının küresel benimsenmesi hakkında veri toplar."""
     
     def __init__(self):
         self.pytrends = TrendReq(hl='en-US', tz=360)
         self.data_dir = Path("data/raw")
         self.data_dir.mkdir(parents=True, exist_ok=True)
         
-        # Analiz edilecek AI araçları
         self.ai_tools = [
             'ChatGPT',
             'Midjourney',
@@ -35,87 +31,47 @@ class AIAdoptionCollector:
             'Stable Diffusion'
         ]
         
-        # Analiz edilecek ülkeler (ISO 2-letter codes) - TÜM DÜNYA
         self.countries = {
-            # Kuzey Amerika
             'US': 'United States', 'CA': 'Canada', 'MX': 'Mexico',
-            
-            # Güney Amerika
             'BR': 'Brazil', 'AR': 'Argentina', 'CO': 'Colombia', 'CL': 'Chile',
             'PE': 'Peru', 'VE': 'Venezuela', 'EC': 'Ecuador', 'UY': 'Uruguay',
-            
-            # Avrupa - Batı
             'GB': 'United Kingdom', 'DE': 'Germany', 'FR': 'France', 'IT': 'Italy',
             'ES': 'Spain', 'NL': 'Netherlands', 'BE': 'Belgium', 'CH': 'Switzerland',
             'AT': 'Austria', 'IE': 'Ireland', 'PT': 'Portugal', 'GR': 'Greece',
-            
-            # Avrupa - Kuzey
             'SE': 'Sweden', 'NO': 'Norway', 'DK': 'Denmark', 'FI': 'Finland',
             'IS': 'Iceland',
-            
-            # Avrupa - Doğu
             'PL': 'Poland', 'CZ': 'Czech Republic', 'HU': 'Hungary', 'RO': 'Romania',
             'BG': 'Bulgaria', 'SK': 'Slovakia', 'HR': 'Croatia', 'SI': 'Slovenia',
             'RS': 'Serbia', 'LT': 'Lithuania', 'LV': 'Latvia', 'EE': 'Estonia',
             'UA': 'Ukraine', 'BY': 'Belarus',
-            
-            # Asya - Doğu
             'CN': 'China', 'JP': 'Japan', 'KR': 'South Korea', 'TW': 'Taiwan',
             'HK': 'Hong Kong', 'MN': 'Mongolia',
-            
-            # Asya - Güneydoğu
             'ID': 'Indonesia', 'TH': 'Thailand', 'VN': 'Vietnam', 'PH': 'Philippines',
             'MY': 'Malaysia', 'SG': 'Singapore', 'MM': 'Myanmar', 'KH': 'Cambodia',
             'LA': 'Laos',
-            
-            # Asya - Güney
             'IN': 'India', 'PK': 'Pakistan', 'BD': 'Bangladesh', 'LK': 'Sri Lanka',
             'NP': 'Nepal', 'AF': 'Afghanistan',
-            
-            # Orta Doğu
             'TR': 'Turkey', 'SA': 'Saudi Arabia', 'AE': 'United Arab Emirates',
             'IL': 'Israel', 'IR': 'Iran', 'IQ': 'Iraq', 'EG': 'Egypt', 
             'JO': 'Jordan', 'LB': 'Lebanon', 'KW': 'Kuwait', 'QA': 'Qatar',
             'OM': 'Oman', 'BH': 'Bahrain', 'YE': 'Yemen',
-            
-            # Afrika - Kuzey
             'MA': 'Morocco', 'DZ': 'Algeria', 'TN': 'Tunisia', 'LY': 'Libya',
-            
-            # Afrika - Batı
             'NG': 'Nigeria', 'GH': 'Ghana', 'CI': 'Ivory Coast', 'SN': 'Senegal',
-            
-            # Afrika - Doğu
             'KE': 'Kenya', 'ET': 'Ethiopia', 'TZ': 'Tanzania', 'UG': 'Uganda',
-            
-            # Afrika - Güney
             'ZA': 'South Africa', 'ZW': 'Zimbabwe', 'BW': 'Botswana', 'NA': 'Namibia',
-            
-            # Okyanusya
             'AU': 'Australia', 'NZ': 'New Zealand', 'FJ': 'Fiji', 'PG': 'Papua New Guinea',
-            
-            # Rusya ve Orta Asya
             'RU': 'Russia', 'KZ': 'Kazakhstan', 'UZ': 'Uzbekistan', 'GE': 'Georgia',
             'AZ': 'Azerbaijan', 'AM': 'Armenia'
         }
         
     def collect_google_trends(self, tool_name, timeframe='2023-01-01 2025-12-31'):
-        """
-        Belirli bir AI aracı için Google Trends verisi toplar.
         
-        Args:
-            tool_name (str): AI aracının adı
-            timeframe (str): Zaman aralığı
-            
-        Returns:
-            pd.DataFrame: Ülke bazında trend verileri
-        """
-        print(f"\n🔍 {tool_name} için Google Trends verisi topluyorum...")
+        print(f"\nCollecting Google Trends data for {tool_name}...")
         
         all_data = []
         
         for country_code, country_name in self.countries.items():
             try:
-                # Google Trends API çağrısı
                 self.pytrends.build_payload(
                     [tool_name],
                     cat=0,
@@ -124,16 +80,13 @@ class AIAdoptionCollector:
                     gprop=''
                 )
                 
-                # Interest over time
                 interest_over_time = self.pytrends.interest_over_time()
                 
                 if not interest_over_time.empty:
-                    # Ortalama, maksimum ve son değerleri hesapla
                     avg_interest = interest_over_time[tool_name].mean()
                     max_interest = interest_over_time[tool_name].max()
                     last_interest = interest_over_time[tool_name].iloc[-1]
                     
-                    # Trend (yükseliş/düşüş) hesapla
                     first_half = interest_over_time[tool_name].iloc[:len(interest_over_time)//2].mean()
                     second_half = interest_over_time[tool_name].iloc[len(interest_over_time)//2:].mean()
                     trend_direction = 'rising' if second_half > first_half else 'falling'
@@ -151,36 +104,28 @@ class AIAdoptionCollector:
                         'data_points': len(interest_over_time)
                     })
                     
-                    print(f"  ✅ {country_name}: Avg={avg_interest:.1f}, Max={max_interest}")
+                    print(f"  {country_name}: Avg={avg_interest:.1f}, Max={max_interest}")
                 else:
-                    print(f"  ⚠️  {country_name}: Veri bulunamadı")
+                    print(f"  {country_name}: No data available")
                 
-                # API rate limiting
                 time.sleep(2)
                 
             except Exception as e:
-                print(f"  ❌ {country_name}: {str(e)}")
+                print(f"  {country_name}: Error - {str(e)}")
                 continue
         
         df = pd.DataFrame(all_data)
         
-        # Dosyaya kaydet
         output_file = self.data_dir / f"trends_{tool_name.lower().replace(' ', '_')}.csv"
         df.to_csv(output_file, index=False)
-        print(f"\n💾 {len(df)} kayıt kaydedildi: {output_file}")
+        print(f"\nSaved {len(df)} records to {output_file}")
         
         return df
     
     def collect_world_bank_data(self):
-        """
-        World Bank API'den ekonomik ve sosyal göstergeleri çeker.
         
-        Returns:
-            pd.DataFrame: Ülke bazında ekonomik veriler
-        """
-        print("\n🌍 World Bank verilerini topluyorum...")
+        print("\nCollecting World Bank data...")
         
-        # World Bank API indicators
         indicators = {
             'NY.GDP.PCAP.CD': 'gdp_per_capita',
             'SE.TER.ENRR': 'tertiary_education',
@@ -195,7 +140,6 @@ class AIAdoptionCollector:
             
             for indicator_code, indicator_name in indicators.items():
                 try:
-                    # World Bank API request
                     url = f"https://api.worldbank.org/v2/country/{country_code}/indicator/{indicator_code}"
                     params = {
                         'format': 'json',
@@ -215,30 +159,24 @@ class AIAdoptionCollector:
                     time.sleep(0.5)
                     
                 except Exception as e:
-                    print(f"  ⚠️  {country_code} - {indicator_name}: {str(e)}")
+                    print(f"  {country_code} - {indicator_name}: {str(e)}")
                     continue
             
             if len(country_data) > 1:
                 all_data.append(country_data)
-                print(f"  ✅ {country_code}: {len(country_data)-1} gösterge")
+                print(f"  {country_code}: {len(country_data)-1} indicators collected")
         
         df = pd.DataFrame(all_data)
         
-        # Dosyaya kaydet
         output_file = self.data_dir / "world_bank_indicators.csv"
         df.to_csv(output_file, index=False)
-        print(f"\n💾 {len(df)} ülke kaydedildi: {output_file}")
+        print(f"\nSaved data for {len(df)} countries to {output_file}")
         
         return df
     
     def collect_github_data(self):
-        """
-        GitHub API'den AI/ML repository istatistikleri toplar.
         
-        Returns:
-            pd.DataFrame: Ülke bazında GitHub aktivitesi
-        """
-        print("\n💻 GitHub verilerini topluyorum...")
+        print("\nCollecting GitHub data...")
         
         base_url = "https://api.github.com/search/repositories"
         
@@ -266,50 +204,45 @@ class AIAdoptionCollector:
                         'top_repo_stars': data['items'][0]['stargazers_count'] if data['items'] else 0
                     })
                     
-                    print(f"  ✅ {country_name}: {data.get('total_count', 0)} repo")
+                    print(f"  {country_name}: {data.get('total_count', 0)} repos")
                 elif response.status_code == 403:
-                    print(f"  ⚠️  Rate limit aşıldı, bekliyorum...")
+                    print(f"  Rate limit reached, waiting...")
                     time.sleep(60)
                     continue
                 
                 time.sleep(2)
                 
             except Exception as e:
-                print(f"  ❌ {country_name}: {str(e)}")
+                print(f"  {country_name}: {str(e)}")
                 continue
         
         df = pd.DataFrame(all_data)
         
-        # Dosyaya kaydet
         output_file = self.data_dir / "github_ai_activity.csv"
         df.to_csv(output_file, index=False)
-        print(f"\n💾 {len(df)} ülke kaydedildi: {output_file}")
+        print(f"\nSaved data for {len(df)} countries to {output_file}")
         
         return df
     
     def collect_all_data(self):
-        """Tüm veri kaynaklarından veri toplar ve birleştirir."""
-        print("=" * 60)
-        print("🚀 AI ADOPTION DATA COLLECTION")
-        print("=" * 60)
+        
+        print("="*60)
+        print("AI ADOPTION DATA COLLECTION")
+        print("="*60)
         
         start_time = time.time()
         
-        # 1. Google Trends - ChatGPT
-        print("\n📊 ADIM 1/2: Google Trends Verileri")
-        print("-" * 60)
+        print("\nStep 1/2: Google Trends Data")
+        print("-"*60)
         chatgpt_trends = self.collect_google_trends('ChatGPT')
         
-        # 2. World Bank Data
-        print("\n📊 ADIM 2/2: World Bank Ekonomik Verileri")
-        print("-" * 60)
+        print("\nStep 2/2: World Bank Economic Data")
+        print("-"*60)
         wb_data = self.collect_world_bank_data()
         
-        # GitHub kısmını atladık (rate limit + güvenilir değil)
-        print("\n⏭️  GitHub API atlandı (location verisi güvenilir değil)")
+        print("\nSkipping GitHub API (location data unreliable)")
         
-        # Verileri birleştir
-        print("\n🔗 Verileri birleştiriyorum...")
+        print("\nMerging datasets...")
         
         combined = chatgpt_trends[['country_code', 'country_name', 'avg_interest', 
                                    'max_interest', 'current_interest', 'trend_direction']]
@@ -317,34 +250,32 @@ class AIAdoptionCollector:
         if not wb_data.empty:
             combined = combined.merge(wb_data, on='country_code', how='left')
         
-        # Final dataset kaydet
         output_file = Path("data/processed/ai_adoption_combined.csv")
         output_file.parent.mkdir(parents=True, exist_ok=True)
         combined.to_csv(output_file, index=False)
         
-        # Özet
         elapsed = time.time() - start_time
-        print("\n" + "=" * 60)
-        print("✅ VERİ TOPLAMA TAMAMLANDI!")
-        print("=" * 60)
-        print(f"📁 Toplam ülke: {len(combined)}")
-        print(f"📊 Toplam sütun: {len(combined.columns)}")
-        print(f"⏱️  Süre: {elapsed/60:.1f} dakika")
-        print(f"💾 Ana dosya: {output_file}")
-        print("=" * 60)
+        print("\n" + "="*60)
+        print("DATA COLLECTION COMPLETE")
+        print("="*60)
+        print(f"Total countries: {len(combined)}")
+        print(f"Total columns: {len(combined.columns)}")
+        print(f"Time elapsed: {elapsed/60:.1f} minutes")
+        print(f"Output file: {output_file}")
+        print("="*60)
         
-        print("\n📈 Veri Özeti:")
+        print("\nData Summary:")
         print(combined.describe())
         
         return combined
 
 
 def main():
-    """Ana çalıştırma fonksiyonu"""
+    
     collector = AIAdoptionCollector()
     df = collector.collect_all_data()
     
-    print("\n🌍 En Yüksek ChatGPT İlgisi Gösteren Ülkeler:")
+    print("\nTop Countries by ChatGPT Interest:")
     print(df.nlargest(10, 'avg_interest')[['country_name', 'avg_interest', 'gdp_per_capita']])
 
 

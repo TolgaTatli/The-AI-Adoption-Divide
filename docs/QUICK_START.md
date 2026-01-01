@@ -1,4 +1,6 @@
 # 🚀 Projeyi Çalıştırma Rehberi - BAŞLANGIÇ
+### The AI Adoption Divide - How Economic Development Shapes Global AI Tool Adoption
+
 
 ## 📋 Dosyalar ve Ne İşe Yaradıkları
 

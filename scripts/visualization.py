@@ -1,8 +1,7 @@
 """
 Visualization Script - AI Adoption Project
-==========================================
 
-Interaktif haritalar ve grafikler oluşturur.
+Creates interactive maps and charts.
 """
 
 import pandas as pd
@@ -11,17 +10,16 @@ import plotly.graph_objects as go
 from pathlib import Path
 
 class AIAdoptionVisualizer:
-    """AI adoption verilerini görselleştirir"""
     
     def __init__(self, data_path="data/processed/ai_adoption_cleaned.csv"):
         self.df = pd.read_csv(data_path)
         self.output_dir = Path("visualizations")
         self.output_dir.mkdir(exist_ok=True)
-        print(f"✅ {len(self.df)} kayıt yüklendi")
+        print(f"Loaded {len(self.df)} records")
     
     def create_world_map(self):
-        """Dünya haritası - AI adoption"""
-        print("\n🗺️  Dünya haritası oluşturuluyor...")
+        
+        print("\nGenerating world map...")
         
         fig = px.choropleth(
             self.df,
@@ -56,15 +54,14 @@ class AIAdoptionVisualizer:
         
         output_file = self.output_dir / "world_map_ai_adoption.html"
         fig.write_html(str(output_file))
-        print(f"✅ Harita kaydedildi: {output_file}")
+        print(f"Map saved: {output_file}")
         
         return fig
     
     def create_scatter_gdp_vs_ai(self):
-        """GDP vs AI Interest scatter plot"""
-        print("\n📊 GDP vs AI Interest grafiği oluşturuluyor...")
         
-        # Population için NaN değerleri median ile doldur
+        print("\nGenerating GDP vs AI Interest chart...")
+        
         df_plot = self.df.copy()
         df_plot['population'] = df_plot['population'].fillna(df_plot['population'].median())
         
@@ -85,13 +82,13 @@ class AIAdoptionVisualizer:
         
         output_file = self.output_dir / "scatter_gdp_vs_ai.html"
         fig.write_html(str(output_file))
-        print(f"✅ Grafik kaydedildi: {output_file}")
+        print(f"Chart saved: {output_file}")
         
         return fig
     
     def create_top_countries_bar(self, top_n=15):
-        """Top N ülkeleri gösteren bar chart"""
-        print(f"\n📊 Top {top_n} ülke grafiği oluşturuluyor...")
+        
+        print(f"\nGenerating top {top_n} countries chart...")
         
         top_countries = self.df.nlargest(top_n, 'avg_interest')
         
@@ -108,78 +105,28 @@ class AIAdoptionVisualizer:
         
         output_file = self.output_dir / f"top_{top_n}_countries.html"
         fig.write_html(str(output_file))
-        print(f"✅ Grafik kaydedildi: {output_file}")
+        print(f"Chart saved: {output_file}")
         
         return fig
     
-    def create_box_plots(self):
-        """Box plot görselleştirmeleri"""
-        print("\n📦 Box plots oluşturuluyor...")
-        
-        # 1. Economic category bazında AI interest
-        fig1 = px.box(
-            self.df,
-            x='economic_category',
-            y='avg_interest',
-            color='economic_category',
-            points='all',
-            hover_data=['country_name'],
-            title='AI Interest Distribution by Economic Category',
-            labels={
-                'avg_interest': 'AI Interest (%)',
-                'economic_category': 'Economic Category'
-            },
-            color_discrete_sequence=px.colors.qualitative.Pastel
-        )
-        
-        fig1.update_layout(showlegend=False, width=900, height=600)
-        
-        output_file1 = self.output_dir / 'boxplot_economic_category.html'
-        fig1.write_html(str(output_file1))
-        print(f"✅ Box plot kaydedildi: {output_file1}")
-        
-        # 2. Region bazında AI interest
-        if 'region' in self.df.columns:
-            fig2 = px.box(
-                self.df,
-                x='region',
-                y='avg_interest',
-                color='region',
-                points='all',
-                hover_data=['country_name'],
-                title='AI Interest Distribution by Region',
-                labels={
-                    'avg_interest': 'AI Interest (%)',
-                    'region': 'Region'
-                }
-            )
-            
-            fig2.update_xaxes(tickangle=45)
-            fig2.update_layout(showlegend=False, width=1400, height=700)
-            
-            output_file2 = self.output_dir / 'boxplot_regions.html'
-            fig2.write_html(str(output_file2))
-            print(f"✅ Box plot kaydedildi: {output_file2}")
-    
     def create_all_visualizations(self):
-        """Tüm görselleştirmeleri oluştur"""
+        
         print("="*60)
-        print("🎨 GÖRSELLEŞTİRMELER OLUŞTURULUYOR")
+        print("GENERATING VISUALIZATIONS")
         print("="*60)
         
         self.create_world_map()
         self.create_scatter_gdp_vs_ai()
         self.create_top_countries_bar()
-        self.create_box_plots()
         
         print("\n" + "="*60)
-        print("✅ TÜM GÖRSELLEŞTİRMELER TAMAMLANDI!")
-        print(f"📁 Klasör: {self.output_dir}")
-        print("📊 Toplam: 5 grafik oluşturuldu")
+        print("ALL VISUALIZATIONS COMPLETE")
+        print(f"Output folder: {self.output_dir}")
+        print("Total charts: 3")
         print("="*60)
 
 def main():
-    """Ana işlem"""
+    
     visualizer = AIAdoptionVisualizer()
     visualizer.create_all_visualizations()
 

@@ -35,38 +35,67 @@ class AIAdoptionCollector:
             'Stable Diffusion'
         ]
         
-        # Analiz edilecek ülkeler (ISO 2-letter codes)
+        # Analiz edilecek ülkeler (ISO 2-letter codes) - TÜM DÜNYA
         self.countries = {
-            'US': 'United States',
-            'GB': 'United Kingdom', 
-            'DE': 'Germany',
-            'FR': 'France',
-            'JP': 'Japan',
-            'CN': 'China',
-            'IN': 'India',
-            'BR': 'Brazil',
-            'CA': 'Canada',
-            'AU': 'Australia',
-            'KR': 'South Korea',
-            'IT': 'Italy',
-            'ES': 'Spain',
-            'MX': 'Mexico',
-            'ID': 'Indonesia',
-            'NL': 'Netherlands',
-            'TR': 'Turkey',
-            'SA': 'Saudi Arabia',
-            'CH': 'Switzerland',
-            'PL': 'Poland',
-            'SE': 'Sweden',
-            'BE': 'Belgium',
-            'AR': 'Argentina',
-            'NO': 'Norway',
-            'AT': 'Austria',
-            'IL': 'Israel',
-            'IE': 'Ireland',
-            'DK': 'Denmark',
-            'SG': 'Singapore',
-            'MY': 'Malaysia'
+            # Kuzey Amerika
+            'US': 'United States', 'CA': 'Canada', 'MX': 'Mexico',
+            
+            # Güney Amerika
+            'BR': 'Brazil', 'AR': 'Argentina', 'CO': 'Colombia', 'CL': 'Chile',
+            'PE': 'Peru', 'VE': 'Venezuela', 'EC': 'Ecuador', 'UY': 'Uruguay',
+            
+            # Avrupa - Batı
+            'GB': 'United Kingdom', 'DE': 'Germany', 'FR': 'France', 'IT': 'Italy',
+            'ES': 'Spain', 'NL': 'Netherlands', 'BE': 'Belgium', 'CH': 'Switzerland',
+            'AT': 'Austria', 'IE': 'Ireland', 'PT': 'Portugal', 'GR': 'Greece',
+            
+            # Avrupa - Kuzey
+            'SE': 'Sweden', 'NO': 'Norway', 'DK': 'Denmark', 'FI': 'Finland',
+            'IS': 'Iceland',
+            
+            # Avrupa - Doğu
+            'PL': 'Poland', 'CZ': 'Czech Republic', 'HU': 'Hungary', 'RO': 'Romania',
+            'BG': 'Bulgaria', 'SK': 'Slovakia', 'HR': 'Croatia', 'SI': 'Slovenia',
+            'RS': 'Serbia', 'LT': 'Lithuania', 'LV': 'Latvia', 'EE': 'Estonia',
+            'UA': 'Ukraine', 'BY': 'Belarus',
+            
+            # Asya - Doğu
+            'CN': 'China', 'JP': 'Japan', 'KR': 'South Korea', 'TW': 'Taiwan',
+            'HK': 'Hong Kong', 'MN': 'Mongolia',
+            
+            # Asya - Güneydoğu
+            'ID': 'Indonesia', 'TH': 'Thailand', 'VN': 'Vietnam', 'PH': 'Philippines',
+            'MY': 'Malaysia', 'SG': 'Singapore', 'MM': 'Myanmar', 'KH': 'Cambodia',
+            'LA': 'Laos',
+            
+            # Asya - Güney
+            'IN': 'India', 'PK': 'Pakistan', 'BD': 'Bangladesh', 'LK': 'Sri Lanka',
+            'NP': 'Nepal', 'AF': 'Afghanistan',
+            
+            # Orta Doğu
+            'TR': 'Turkey', 'SA': 'Saudi Arabia', 'AE': 'United Arab Emirates',
+            'IL': 'Israel', 'IR': 'Iran', 'IQ': 'Iraq', 'EG': 'Egypt', 
+            'JO': 'Jordan', 'LB': 'Lebanon', 'KW': 'Kuwait', 'QA': 'Qatar',
+            'OM': 'Oman', 'BH': 'Bahrain', 'YE': 'Yemen',
+            
+            # Afrika - Kuzey
+            'MA': 'Morocco', 'DZ': 'Algeria', 'TN': 'Tunisia', 'LY': 'Libya',
+            
+            # Afrika - Batı
+            'NG': 'Nigeria', 'GH': 'Ghana', 'CI': 'Ivory Coast', 'SN': 'Senegal',
+            
+            # Afrika - Doğu
+            'KE': 'Kenya', 'ET': 'Ethiopia', 'TZ': 'Tanzania', 'UG': 'Uganda',
+            
+            # Afrika - Güney
+            'ZA': 'South Africa', 'ZW': 'Zimbabwe', 'BW': 'Botswana', 'NA': 'Namibia',
+            
+            # Okyanusya
+            'AU': 'Australia', 'NZ': 'New Zealand', 'FJ': 'Fiji', 'PG': 'Papua New Guinea',
+            
+            # Rusya ve Orta Asya
+            'RU': 'Russia', 'KZ': 'Kazakhstan', 'UZ': 'Uzbekistan', 'GE': 'Georgia',
+            'AZ': 'Azerbaijan', 'AM': 'Armenia'
         }
         
     def collect_google_trends(self, tool_name, timeframe='2023-01-01 2025-12-31'):
@@ -267,19 +296,17 @@ class AIAdoptionCollector:
         start_time = time.time()
         
         # 1. Google Trends - ChatGPT
-        print("\n📊 ADIM 1/3: Google Trends Verileri")
+        print("\n📊 ADIM 1/2: Google Trends Verileri")
         print("-" * 60)
         chatgpt_trends = self.collect_google_trends('ChatGPT')
         
         # 2. World Bank Data
-        print("\n📊 ADIM 2/3: World Bank Ekonomik Verileri")
+        print("\n📊 ADIM 2/2: World Bank Ekonomik Verileri")
         print("-" * 60)
         wb_data = self.collect_world_bank_data()
         
-        # 3. GitHub Data
-        print("\n📊 ADIM 3/3: GitHub AI Aktivitesi")
-        print("-" * 60)
-        github_data = self.collect_github_data()
+        # GitHub kısmını atladık (rate limit + güvenilir değil)
+        print("\n⏭️  GitHub API atlandı (location verisi güvenilir değil)")
         
         # Verileri birleştir
         print("\n🔗 Verileri birleştiriyorum...")
@@ -289,13 +316,6 @@ class AIAdoptionCollector:
         
         if not wb_data.empty:
             combined = combined.merge(wb_data, on='country_code', how='left')
-        
-        if not github_data.empty:
-            combined = combined.merge(
-                github_data[['country_code', 'ai_repos_count']], 
-                on='country_code', 
-                how='left'
-            )
         
         # Final dataset kaydet
         output_file = Path("data/processed/ai_adoption_combined.csv")
